@@ -4,7 +4,33 @@ Petite application de bureau qui répond à une question : **la version 360° de
 
 Usage personnel et test. Ne téléchargez que ce que l'auteur autorise : vidéo sous licence Creative Commons, ou accord de l'auteur. L'application affiche la licence de chaque vidéo.
 
-## Installation (Mac)
+## Télécharger l'application
+
+Les versions prêtes à l'emploi sont dans les [Releases](https://github.com/Julien-Dr/video360-downloader/releases) :
+
+| Système | Fichier |
+|---|---|
+| Mac Apple Silicon (M1 à M4) | `verif-360-…-mac-arm64.dmg` |
+| Mac Intel | `verif-360-…-mac-x64.dmg` |
+| Windows | `…-windows-installeur.exe`, ou `…-windows-portable.exe` sans installation |
+| Linux | `…-linux-x86_64.AppImage` |
+
+Les applications ne sont pas signées par un éditeur reconnu, d'où une étape au premier lancement :
+- **Mac** : ouvrez le `.dmg` et glissez l'application dans Applications. Au premier lancement, si macOS bloque, allez dans **Réglages Système › Confidentialité et sécurité › Ouvrir quand même**. Si macOS la dit « endommagée », lancez `xattr -cr "/Applications/Verif 360.app"` dans le Terminal.
+- **Windows** : SmartScreen affiche « Windows a protégé votre ordinateur » ; cliquez sur **Informations complémentaires › Exécuter quand même**.
+- **Linux** : `chmod +x verif-360-*.AppImage`, puis lancez-le.
+
+### Publier une nouvelle version
+
+Changer `version` dans `package.json`, committer, puis pousser une étiquette :
+
+```bash
+git tag v1.0.1 && git push origin v1.0.1
+```
+
+L'action *Fabriquer l'application* construit les trois systèmes et crée la Release. On peut aussi la lancer à la main (onglet Actions › Run workflow) : les fichiers sont alors seulement dans les artefacts de l'exécution.
+
+## Installation depuis le code (Mac)
 
 Prérequis : Node.js (`brew install node`). ffmpeg via Homebrew est conseillé (`brew install ffmpeg`), car il encode avec la puce Apple, beaucoup plus vite. Sans lui, l'application utilise la copie de ffmpeg qu'elle embarque.
 

@@ -9,7 +9,10 @@
   "private": true,
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac --publish never",
+    "dist:win": "electron-builder --win --publish never",
+    "dist:linux": "electron-builder --linux --publish never"
   },
   "build": {
     "appId": "net.julien-drochon.verif-360",
@@ -33,7 +36,8 @@
         {
           "target": "dmg",
           "arch": [
-            "arm64"
+            "arm64",
+            "x64"
           ]
         }
       ],
@@ -41,18 +45,51 @@
       "identity": "-",
       "extendInfo": {
         "CFBundleDisplayName": "Vérif 360"
-      }
+      },
+      "artifactName": "verif-360-${version}-mac-${arch}.${ext}"
     },
     "win": {
       "target": [
-        "nsis"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ]
     },
     "linux": {
       "target": [
-        "AppImage"
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
-      "category": "Video"
+      "category": "Video",
+      "artifactName": "verif-360-${version}-linux-x86_64.${ext}"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Julien-Dr",
+        "repo": "video360-downloader"
+      }
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "verif-360-${version}-windows-installeur.${ext}"
+    },
+    "portable": {
+      "artifactName": "verif-360-${version}-windows-portable.${ext}"
     }
   },
   "dependencies": {
@@ -61,5 +98,10 @@
   "devDependencies": {
     "electron": "^45.0.0",
     "electron-builder": "^26.18.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Julien-Dr/video360-downloader.git"
+  },
+  "homepage": "https://github.com/Julien-Dr/video360-downloader"
 }
