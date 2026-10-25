@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self'; media-src 'self' file: blob:">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vérif 360</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo" aria-hidden="true"></div>
+    <div><h1>Vérif 360</h1><div class="tag">La version 360° d'une vidéo YouTube est-elle téléchargeable ?</div></div>
+  </div>
+  <button id="btn-player" title="Ouvrir une vidéo de l'ordinateur dans le lecteur 360°">Lecteur 360°</button>
+  <button class="chip" id="tools-chip" title="Outils">…</button>
+</header>
+
+<div class="banner warn" id="setup" hidden>
+  <div>
+    <b>yt-dlp n'est pas installé.</b> C'est le logiciel libre qui interroge YouTube. L'application peut télécharger sa version officielle depuis GitHub (environ 35 Mo).
+    <div class="minibar" id="install-bar" hidden><i></i></div>
+  </div>
+  <button class="primary" id="btn-install">Installer yt-dlp</button>
+</div>
+
+<main>
+  <section class="card">
+    <form id="form" class="url-row">
+      <input type="url" id="url" placeholder="Collez l'adresse d'une vidéo YouTube 360°" autocomplete="off" spellcheck="false" required>
+      <button type="button" id="btn-paste" class="ghost" title="Coller le presse-papiers">Coller</button>
+      <button type="submit" class="primary" id="btn-analyze">Vérifier</button>
+    </form>
+    <details class="opts">
+      <summary>Options</summary>
+      <div class="opts-grid">
+        <label>Cookies du navigateur
+          <select id="opt-cookies">
+            <option value="">Aucun</option>
+            <option value="chrome">Chrome</option>
+            <option value="safari">Safari</option>
+            <option value="firefox">Firefox</option>
+            <option value="edge">Edge</option>
+            <option value="brave">Brave</option>
+          </select>
+          <small>Si YouTube demande de prouver qu'on n'est pas un robot. Il faut être connecté à YouTube dans ce navigateur.</small>
+        </label>
+        <label>Astuce « user-agent vide »
+          <select id="opt-ua">
+            <option value="auto">Automatique (si aucune 360° trouvée)</option>
+            <option value="always">Toujours</option>
+            <option value="never">Jamais</option>
+          </select>
+          <small>Certaines versions de YouTube ne livrent qu'une version à plat sans cette astuce.</small>
+        </label>
+      </div>
+    </details>
+  </section>
+
+  <section class="card" id="busy" hidden>
+    <div class="spinner" aria-hidden="true"></div>
+    <div><b id="busy-title">Analyse en cours…</b><div class="muted" id="busy-sub">yt-dlp interroge YouTube.</div></div>
+    <button class="ghost" id="btn-cancel-analyze">Annuler</button>
+  </section>
+
+  <div class="banner err" id="error" hidden></div>
+
+  <section id="result" hidden>
+    <div class="card video">
+      <img id="thumb" alt="">
+      <div class="video-meta">
+        <h2 id="v-title"></h2>
+        <div class="muted" id="v-sub"></div>
+        <div id="v-license"></div>
+      </div>
+    </div>
+
+    <div class="verdict" id="verdict"></div>
+
+    <div class="card">
+      <h3>Formats image disponibles</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th></th><th>Résolution</th><th>Type</th><th>Codec</th><th>Img/s</th><th>Taille</th><th>Sur le Quest</th></tr></thead>
+          <tbody id="formats"></tbody>
+        </table>
+      </div>
+      <label class="check"><input type="checkbox" id="show-all"> Afficher aussi les petites résolutions et les versions à plat</label>
+    </div>
+
+    <div class="card" id="dl-card">
+      <h3>Télécharger</h3>
+      <div class="dl-grid">
+        <label class="field">Dossier
+          <div class="folder"><span id="folder" class="mono"></span><button type="button" class="ghost" id="btn-folder">Changer…</button></div>
+        </label>
+        <label class="field">Suffixe du nom de fichier
+          <select id="opt-suffix">
+            <option value="">Aucun</option>
+            <option value="_360">_360 · monoscopique</option>
+            <option value="_360_TB">_360_TB · stéréo haut/bas</option>
+            <option value="_360_LR">_360_LR · stéréo côte à côte</option>
+          </select>
+        </label>
+        <label class="check"><input type="checkbox" id="opt-reencode"> <span>Réencoder en H.265 pour le Meta Quest <small class="muted" id="reencode-hint"></small></span></label>
+        <label class="field" id="maxw-field">Largeur maximale après réencodage
+          <select id="opt-maxw">
+            <option value="">Garder la définition d'origine</option>
+            <option value="5760">5760 px (5,7K, conseillé)</option>
+            <option value="3840">3840 px (4K)</option>
+          </select>
+        </label>
+        <label class="check" id="keep-field"><input type="checkbox" id="opt-keep" checked> <span>Conserver aussi le fichier d'origine</span></label>
+      </div>
+      <div class="actions">
+        <button class="primary big" id="btn-download">Télécharger</button>
+        <button class="big" id="btn-cancel-dl" hidden>Annuler</button>
+      </div>
+      <div class="progress" id="progress" hidden>
+        <div class="pbar"><i id="p-fill"></i></div>
+        <div class="progress-txt"><b id="p-label"></b><span class="muted" id="p-meta"></span></div>
+      </div>
+      <div class="banner ok" id="done" hidden></div>
+    </div>
+  </section>
+</main>
+
+<footer class="muted">
+  Ne téléchargez que ce que l'auteur autorise : vidéo sous licence Creative Commons, ou accord de l'auteur. Les conditions d'utilisation de YouTube l'interdisent dans les autres cas.
+</footer>
+
+<div id="player" class="player" hidden>
+  <canvas id="pl-canvas" tabindex="0" aria-label="Vue 360° : glisser pour regarder autour, molette pour zoomer"></canvas>
+  <video id="pl-video" preload="auto" hidden></video>
+  <div class="pl-top">
+    <span id="pl-title" class="pl-title"></span>
+    <select id="pl-proj" aria-label="Projection">
+      <option value="mono360">360° mono</option>
+      <option value="tb360">360° stéréo haut/bas</option>
+      <option value="lr360">360° stéréo côte à côte</option>
+      <option value="lr180">180° stéréo côte à côte</option>
+      <option value="mono180">180° mono</option>
+      <option value="flat">À plat</option>
+    </select>
+    <button id="pl-close" class="pl-btn" aria-label="Fermer le lecteur" title="Fermer (Échap)">✕</button>
+  </div>
+  <div id="pl-hint" class="pl-hint">Glissez pour regarder autour · molette pour zoomer · double-clic : plein écran</div>
+  <div id="pl-loading" class="pl-loading"><div class="spinner"></div></div>
+  <div id="pl-error" class="pl-error" hidden></div>
+  <div class="pl-bar">
+    <button id="pl-play" class="pl-btn" aria-label="Lire">▶</button>
+    <span id="pl-time" class="pl-time">0:00 / 0:00</span>
+    <input id="pl-seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Position">
+    <button id="pl-mute" class="pl-btn" aria-label="Couper le son">🔊</button>
+    <input id="pl-vol" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volume" class="pl-vol">
+    <button id="pl-reset" class="pl-btn" title="Recentrer la vue (R)" aria-label="Recentrer la vue">⌖</button>
+    <button id="pl-fs" class="pl-btn" title="Plein écran (F)" aria-label="Plein écran">⛶</button>
+  </div>
+</div>
+<div id="drop-hint" class="drop-hint" hidden>Déposez la vidéo pour la lire en 360°</div>
+
+<script src="player.js"></script>
+<script src="renderer.js"></script>
+</body>
+</html>

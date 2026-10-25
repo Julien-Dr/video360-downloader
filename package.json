@@ -1,0 +1,65 @@
+{
+  "name": "verif-360",
+  "productName": "Verif 360",
+  "version": "1.0.0",
+  "description": "Vérifie si la version 360° d'une vidéo YouTube est téléchargeable, puis la prépare pour Meta Quest",
+  "main": "src/main.js",
+  "author": "Julien",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "net.julien-drochon.verif-360",
+    "productName": "Verif 360",
+    "artifactName": "verif-360-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**",
+      "renderer/**",
+      "build/icon.png",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/ffmpeg-static/**"
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.video",
+      "identity": "-",
+      "extendInfo": {
+        "CFBundleDisplayName": "Vérif 360"
+      }
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Video"
+    }
+  },
+  "dependencies": {
+    "ffmpeg-static": "^5.3.0"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0"
+  }
+}
